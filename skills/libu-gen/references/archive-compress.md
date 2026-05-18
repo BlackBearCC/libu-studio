@@ -2,7 +2,9 @@
 
 ## D.1 双轨存放：lab 留原片 / 项目用压缩版
 
-- **`~/Documents/petclaw-lab/work/<slug>-anim/<name>/`**：完整母本档案，不压缩，方便回溯/重生成
+`<lab-root>` 指本地 clone 的 ClawContent-Lab 根，`<target-project>` 指 character 消费方仓库根。
+
+- **`<lab-root>/work/<slug>-anim/<name>/`**：完整母本档案，不压缩，方便回溯/重生成
   - `<name>.mp4` — liblib 下载的原始 mp4
   - `raw/*.png` — ffmpeg 抽出来的 121 帧原始 PNG (RGB, 含绿幕)
   - `masked/*.png` — bgrm Vision 抠图后 PNG (RGBA, 边缘有绿溢色)
@@ -22,13 +24,14 @@ FFMPEG=$($PY -c "import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())")
 SCALE=0.5  # 调这里可调到 0.66 / 0.75 等; 5MB 不够时降 SCALE
 Q=90
 
-SLUG=poka-v4   # 改成实际角色
+SLUG=<your-slug>     # e.g. poka-v4
 ANIM=<name>
-LAB=$HOME/Documents/petclaw-lab/work/$SLUG-anim/$ANIM
-# 从 lab.db 查 inject_target_dir
-TGT_REL=$(sqlite3 $HOME/Documents/petclaw-lab/lab.db \
+LAB_ROOT=<lab-root>          # local clone of ClawContent-Lab
+TARGET_PROJECT=<target-project>  # local clone of the character's consuming project
+LAB=$LAB_ROOT/work/$SLUG-anim/$ANIM
+TGT_REL=$(sqlite3 $LAB_ROOT/lab.db \
   "SELECT inject_target_dir FROM characters WHERE slug='$SLUG';")
-OUT=$HOME/Documents/PetClaw/$TGT_REL$ANIM   # 注意拼接
+OUT=$TARGET_PROJECT/$TGT_REL$ANIM
 
 # 1. lab/webp/ 用原分辨率 q90 (lab 母本)
 rm -f $LAB/webp/*.webp
@@ -70,8 +73,8 @@ du -sh $OUT  # 验证 ≤ 5MB
 > 当前未做完 `lab.py` CLI 前，临时用 sqlite3 直接 INSERT；Step 3 完成后切到 `lab.py gen/choose/inject`。
 
 ```bash
-DB=~/Documents/petclaw-lab/lab.db
-SLUG=poka-v4
+DB=<lab-root>/lab.db
+SLUG=<your-slug>     # e.g. poka-v4
 NAME=<name>
 KIND=idle  # idle / state_triggered / attribute_biased_idle / attribute_transition
 
@@ -104,37 +107,38 @@ sqlite3 "$DB" "INSERT INTO target_inject (task_id, anim_name, webp_subdir)
 
 # 6. 重新生成主仓 manifest.json
 TGT_REL=$(sqlite3 "$DB" "SELECT inject_target_dir FROM characters WHERE slug='$SLUG';")
-python3 ~/Documents/petclaw-lab/scripts/export-manifest.py \
-  "$DB" $SLUG --out ~/Documents/PetClaw/${TGT_REL}manifest.json
+python3 <lab-root>/scripts/export-manifest.py \
+  "$DB" $SLUG --out <target-project>/${TGT_REL}manifest.json
 
 # 7. 校验 round-trip 零差异（可选）
-python3 ~/Documents/petclaw-lab/scripts/verify-roundtrip.py \
-  ~/Documents/PetClaw/${TGT_REL}manifest.json /tmp/check.json  # 视情况
+python3 <lab-root>/scripts/verify-roundtrip.py \
+  <target-project>/${TGT_REL}manifest.json /tmp/check.json  # 视情况
 ```
 
 **必填字段（不允许缩写或省略）**：`prompt` / `source_url` / `ref_first`（或 `ref_single`）/ `credits_spent` —— manifest 是这条动画唯一的"完整 reproducible 档案"。
 
 **关键参考图**（A.pre 洗出来的、用户从 4 张候选挑定的那张）必须留两份：
 - `~/Downloads/<slug>-<anim>-ref.png` — 工作副本，方便后续重传到 liblib 图库
-- `~/Documents/petclaw-lab/work/<slug>-anim/<anim>/ref_*.png` — 永久 lab 副本
+- `<lab-root>/work/<slug>-anim/<anim>/ref_*.png` — 永久 lab 副本
 
 不仅"图标图片"（指 A.pre 洗的姿态参考图）要存, 视频生成的 mp4 也要存到 `lab/<name>.mp4`（不能只指望 liblib CDN URL —— images-wm.liblib.cloud 是带 30 天-1年 不等的 TTL，老了会 404）。
 
 ## D.4 commit checklist
 
-target 项目（PetClaw）的 git：
+**target 项目侧**（character 消费方仓库；以 Godot 项目布局为例）：
 ```bash
-git add <inject_target_dir>/<name>/          # 压缩 WebP
-git add <inject_target_dir>/manifest.json    # 由 export-manifest.py 重生成
-git add apps/godot-pet/scripts/character/character_controller.gd     # _anim_config + 钩子
-git add apps/godot-pet/scripts/character/attribute_anim_director.gd  # (新功能时)
-git add apps/godot-pet/scripts/main.gd                                # wiring
+cd <target-project>
+git add <inject_target_dir><name>/                # 压缩 WebP
+git add <inject_target_dir>manifest.json          # 由 export-manifest.py 重生成
+git add <path-to>/character_controller.gd         # _anim_config + 钩子
+git add <path-to>/attribute_anim_director.gd      # (新功能时)
+git add <path-to>/main.gd                         # wiring
 ```
 
-lab 仓（独立 git）：
+**lab 仓侧**（ClawContent-Lab 本地 clone；多数文件被 `.gitignore` 排除，按需 commit 元数据）：
 ```bash
-cd ~/Documents/petclaw-lab
-git add work/<slug>-anim/<name>/  # mp4 + raw + masked + despilled + webp 母本
-git add lab.db lab.dump.sql
-# lab.dump.sql 通过 `sqlite3 lab.db .dump > lab.dump.sql` 重生成，commit 时一并提
+cd <lab-root>
+# work/ 默认被 .gitignore 排除（mp4/png/webp/中间帧不入开源仓），如有需要 PR 公开样例可单独豁免
+git add skills/libu-gen/references/characters/<your-slug>.md   # 角色档案
+# lab.db / lab.dump.sql 也被 .gitignore 排除，由 contributor 本地保留
 ```

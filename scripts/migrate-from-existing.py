@@ -1,19 +1,27 @@
 #!/usr/bin/env python3
-"""One-shot migrator: existing main-repo manifest.json + lab _prompts_log.md
-   → fresh lab.db at petclaw-lab/lab.db.
+"""Example migrator: hand-written manifest.json → fresh lab.db.
+
+> ⚠️ **This script encodes ONE specific historical migration** (a poka-v4
+> consuming-project layout under apps/godot-pet/...). Hard-coded paths and
+> candidate file names below were copied from a particular project's prompts
+> log. **Do NOT run this against your own project unmodified** — read it as a
+> template and adapt:
+>
+>   1. Change the `manifest_path` construction to your project's layout
+>   2. Change the inserted `characters` row (slug / inject_target_dir / etc.)
+>   3. Remove or rewrite the special-cased a-pre image-refine generation
+>      block at the bottom (it embeds prompts and candidate SHAs literal)
+>
+> A future revision may turn this into a parameterized importer; for now
+> treat it as a worked example of how to walk a manifest.json into the schema.
 
 Usage:
-  python3 migrate-from-existing.py <petclaw-root> <lab-root> [--out lab.db]
+  python3 migrate-from-existing.py <project-root> <lab-root> [--out lab.db]
 
-Reads:
-  <petclaw-root>/apps/godot-pet/assets/character-design/poka-v4/anim/manifest.json
-  <lab-root>/work/poka-anim/_prompts_log.md   (informational; cand filenames hardcoded
-                                               below since the log is markdown)
 Writes:
   <lab-root>/lab.db  (or --out path)
 
 The script is destructive: it drops and recreates all tables.
-Safe to re-run during migration; not safe to run against a populated lab.db.
 """
 import argparse
 import datetime as dt
@@ -34,17 +42,18 @@ def b2i(v):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("petclaw_root", help="path to PetClaw main repo")
-    ap.add_argument("lab_root", help="path to petclaw-lab repo")
+    ap.add_argument("project_root", help="path to the character's consuming project")
+    ap.add_argument("lab_root", help="path to ClawContent-Lab repo")
     ap.add_argument("--out", default=None, help="output lab.db path (default <lab>/lab.db)")
     args = ap.parse_args()
 
-    petclaw_root = Path(args.petclaw_root).expanduser().resolve()
+    project_root = Path(args.project_root).expanduser().resolve()
     lab_root = Path(args.lab_root).expanduser().resolve()
     out = Path(args.out).expanduser().resolve() if args.out else (lab_root / "lab.db")
 
+    # NOTE: layout is hard-coded for this example migration. Adapt for your project.
     manifest_path = (
-        petclaw_root
+        project_root
         / "apps/godot-pet/assets/character-design/poka-v4/anim/manifest.json"
     )
     if not manifest_path.exists():
@@ -83,7 +92,8 @@ def main():
         kind = anim.get("kind", "idle")
         created_at = anim.get("created_at")
         lab_master = anim.get("lab_master")
-        # strip "petclaw-lab/" prefix if present so it's relative to lab root
+        # strip the historical "petclaw-lab/" prefix if present so it's relative
+        # to the lab root; adapt to whatever prefix your source manifest uses.
         if lab_master and lab_master.startswith("petclaw-lab/"):
             lab_master = lab_master[len("petclaw-lab/"):]
 

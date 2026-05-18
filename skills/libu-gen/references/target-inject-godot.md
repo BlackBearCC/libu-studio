@@ -1,15 +1,18 @@
 # 阶段 C — target 项目注入（Godot）
 
-> 本 reference 描述 Godot 项目（当前唯一注册的 target）。其他引擎/项目按需新增。
+> 本 reference 描述 Godot 项目（开源仓内目前唯一登记的 target engine）。其他引擎/项目按
+> [README "Adding a new target engine"](../../../README.md#adding-a-new-target-engine) 新增。
 > 当前 character 的 target 路径从 `characters.inject_target_dir` 查（lab.db）。
 
-编辑 `apps/godot-pet/scripts/character/character_controller.gd`（character `poka-v4` 的情况；其他角色按 inject_target_dir 找对应 controller）。
+`<target-project>` 在本文档里是占位符，指 character 实际消费方仓库根目录。`<path-to>` 是该仓库内 character controller 的相对路径，按各项目布局自定（典型 Godot 项目放在 `scripts/character/character_controller.gd`）。
+
+编辑 `<target-project>/<path-to>/character_controller.gd`。
 
 ## 1. 加 `_anim_config` 条目
 
 ```gdscript
 "<name>": {
-    "frames_dir": "res://assets/character-design/<slug>/anim/<name>",
+    "frames_dir": "res://<frames-res-path>/<name>",   # 形如 res://assets/character-design/<slug>/anim/<name>
     "frame_count": 121,   # 与阶段 B 末尾 ls 数一致
     "fps": 24.0,
 },
@@ -49,9 +52,12 @@ elif roll < 0.XX:   # 在 blink 分支前插一条，XX = 上一段阈值 + 0.07
 target 项目的 `manifest.json` 由 lab 脚本生成。阶段 D 跑完 `lab.db` 入库后，执行：
 
 ```bash
-python3 ~/Documents/petclaw-lab/scripts/export-manifest.py \
-  ~/Documents/petclaw-lab/lab.db <slug> \
-  --out <inject_target_dir>/manifest.json
+python3 <lab-root>/scripts/export-manifest.py \
+  <lab-root>/lab.db <slug> \
+  --out <target-project>/<inject_target_dir>/manifest.json
 ```
+
+`<lab-root>` = ClawContent-Lab 仓本地 clone 根目录。
+`<target-project>` + `<inject_target_dir>` 拼起来 = 主仓 manifest.json 应在的位置。
 
 详见 [archive-compress.md](archive-compress.md)。

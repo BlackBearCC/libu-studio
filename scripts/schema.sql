@@ -1,4 +1,4 @@
--- libu-gen / petclaw-lab metadata store
+-- libu-gen metadata store
 -- Single source of truth for liblib.art animation tasks.
 -- Files (mp4 / png / webp / intermediate frames) stay on disk under
 -- work/<character>-anim/<task>/...; this DB only stores string paths + metadata.
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS characters (
   slug                  TEXT PRIMARY KEY,
   display_name          TEXT NOT NULL,
   inject_target_dir     TEXT NOT NULL,   -- relative path inside target project, e.g.
-                                         -- apps/godot-pet/assets/character-design/poka-v4/anim/
+                                         -- assets/character-design/<slug>/anim/
   reference_doc         TEXT,            -- libu-gen reference path
   manifest_version      INTEGER NOT NULL DEFAULT 1,
   default_frame_format  TEXT,            -- top-level "format" of target manifest.json
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS anim_tasks (
   status          TEXT NOT NULL DEFAULT 'wip',  -- wip / shipped / failed / archived
   created_at      TEXT NOT NULL,
   updated_at      TEXT,
-  lab_master_dir  TEXT,             -- relative lab path, e.g. work/poka-anim/idle_starving/
+  lab_master_dir  TEXT,             -- relative lab path, e.g. work/<slug>-anim/<task>/
   paired_with     TEXT,             -- sibling task name (enter ↔ exit, transition recovery)
   trigger_expr    TEXT,             -- Godot signal/method expression
                                     -- (state_triggered + attribute_transition both use this)

@@ -167,9 +167,10 @@ def build_manifest(conn, slug):
             set_if(anim, "credits_note", credits_note)
             set_numeric(anim, "queue_time_min", queue_time_min)
 
-        # lab_master path (re-prepend petclaw-lab/ for backwards compat with main repo)
+        # lab_master path stays relative to <lab-root>; consumers can prepend their
+        # local clone path if needed.
         if lab_master:
-            anim["lab_master"] = "petclaw-lab/" + lab_master
+            anim["lab_master"] = lab_master
 
         set_if(anim, "notes", t_notes)
 

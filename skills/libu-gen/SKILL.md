@@ -7,7 +7,7 @@ description: Use when generating a new animation asset (idle / state-triggered /
 
 通过 liblib.art 生成角色动画素材的流水线：**liblib 出片（三选一路径）→ macOS Vision 抠图 → 绿色残留清理 (despill) → WebP 序列 → target 项目注入 + lab.db 入库**。
 
-角色与目标项目由 lab `characters` 表注册。当前已注册：`poka-v4`（target = `~/Documents/PetClaw/apps/godot-pet/`）。
+角色与目标项目由 lab `characters` 表注册。每个 contributor 在本地 clone 后自行 INSERT 角色行 + 在 `references/characters/<slug>.md` 写一份角色档案。详见 [README](../../README.md) 的 "Register a character" 段。
 
 ## 触发场景
 
@@ -23,7 +23,7 @@ description: Use when generating a new animation asset (idle / state-triggered /
 - Playwright MCP 可用（工具前缀 `mcp__plugin_playwright_playwright__*`），**默认 headless 后台运行**（plugin `.mcp.json` 已加 `--headless`）
 - macOS 14+（用 `VNGenerateForegroundInstanceMaskRequest`）
 - Python `imageio-ffmpeg` 已装（自带 ffmpeg 二进制）
-- 目标角色已在 `~/Documents/petclaw-lab/lab.db` 的 `characters` 表注册；缺则先 INSERT 一行 + 添加 `references/characters/<slug>.md`
+- 目标角色已在 `<lab-root>/lab.db` 的 `characters` 表注册；缺则先 INSERT 一行 + 添加 `references/characters/<slug>.md`
 
 ## 三条路径决策
 
@@ -57,10 +57,10 @@ A.pre 是可选前置；A 或 A.alt 二选一拿到 mp4；阶段 B/C/D 是通用
 1. **用户主导模型选择，skill 不锁定默认**。生成前必须把 **模型 + 分辨率 + 时长（如适用）+ 积分** 四项一起贴给用户确认才点生成。
 2. **角色身份完全靠首尾帧参考图锚定**，prompt 里**禁止描述任何外观/五官/服装**。详见 path-a-alt-text-to-video.md 的"prompt 三铁律"。
 3. **写 prompt 前必读 `references/characters/<slug>.md`**，对齐角色气质和硬约束词。
-4. **每个 anim 跑完必须入 lab.db**：流程结束时通过脚本（见 archive-compress.md）登记 `generations` / `candidates` / `target_inject`。主仓 manifest.json 由 `petclaw-lab/scripts/export-manifest.py` 自动重生成，**不要手动编辑主仓 manifest.json**。
+4. **每个 anim 跑完必须入 lab.db**：流程结束时通过脚本（见 archive-compress.md）登记 `generations` / `candidates` / `target_inject`。target 项目的 manifest.json 由 `<lab-root>/scripts/export-manifest.py` 自动重生成，**不要手动编辑 target 项目的 manifest.json**。
 
 ## 相关文件
 
 - `bgrm.swift` / `bgrm` — macOS Vision 前景抠图 CLI（同目录；首次使用 `swiftc -O bgrm.swift -o bgrm` 编译）
-- `~/Documents/petclaw-lab/lab.db` — 元数据真相源
-- `~/Documents/petclaw-lab/scripts/export-manifest.py` — db → target manifest.json
+- `<lab-root>/lab.db` — 元数据真相源
+- `<lab-root>/scripts/export-manifest.py` — db → target manifest.json

@@ -54,7 +54,7 @@
 
 参考既有成功 prompt 的句式 —— 直接从 lab.db 查同角色历史成功 prompt 照抄结构：
 ```bash
-sqlite3 ~/Documents/petclaw-lab/lab.db \
+sqlite3 <lab-root>/lab.db \
   "SELECT t.name, g.prompt FROM generations g
    JOIN anim_tasks t ON g.task_id=t.id
    WHERE t.character_slug='<slug>' AND g.chosen=1

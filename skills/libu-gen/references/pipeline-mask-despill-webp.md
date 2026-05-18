@@ -36,7 +36,7 @@ PY
 
 # 6. 转 WebP 到 lab 母本目录，从 0000 开始命名
 #    (target 项目用的压缩版在阶段 D 走 0.5x 降采样)
-LAB=$HOME/Documents/petclaw-lab/work/<slug>-anim/<name>
+LAB=<lab-root>/work/<slug>-anim/<name>
 mkdir -p "$LAB/webp"
 cd /tmp/q-despilled && N=$(ls *.png | wc -l) && for i in $(seq 1 $N); do
   "$FFMPEG" -y -i "$(printf "%04d.png" $i)" -c:v libwebp -quality 90 -preset drawing \

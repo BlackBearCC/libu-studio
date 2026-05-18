@@ -1,5 +1,12 @@
 # ClawContent-Lab
 
+> ⚠️ **Platform: macOS 14+ only.** The foreground-mask backend uses Apple's
+> `VNGenerateForegroundInstanceMaskRequest` via a small Swift CLI; there is
+> currently no portable fallback. Linux / Windows users can still consume the
+> data model (`lab.db` + `scripts/`) but cannot run the mask + despill stage.
+> Cross-platform mask backends are welcome contributions — see
+> [CONTRIBUTING](./CONTRIBUTING.md) (TODO).
+
 An open-source **libu** content generation toolkit, driven by AI coding agents
 (Claude Code / Codex / OpenClaw). Use it to manage end-to-end character
 animation pipelines built on top of [liblib.art](https://www.liblib.art/):
