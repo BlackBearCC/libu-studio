@@ -1,0 +1,66 @@
+# --- generated runtime data (do not commit) ---
+lab.db
+lab.db-journal
+lab.db-shm
+lab.db-wal
+lab.dump.sql
+
+# --- private animation working data (resources stay local) ---
+work/
+imports/
+
+# --- character profiles are per-user; only ship the template ---
+skills/libu-gen/references/characters/*
+!skills/libu-gen/references/characters/README.md
+!skills/libu-gen/references/characters/example.md
+
+# --- compiled native binaries (rebuild per machine) ---
+skills/libu-gen/bgrm
+
+# --- media / large assets ---
+*.mp4
+*.mov
+*.avi
+*.webm
+*.webp
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.psd
+*.mp3
+*.wav
+*.flac
+
+# --- credentials / secrets / local config ---
+.env
+.env.*
+*.pem
+*.key
+secrets/
+credentials/
+.cookies
+*cookie*
+*token*
+*secret*
+!*.example
+!*.template
+.config/
+
+# --- OS / editor noise ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+.python-version
+node_modules/
+
+# --- temp / scratch ---
+/tmp/
+scratch/
+*.log
