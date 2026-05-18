@@ -35,6 +35,17 @@ description: Use when generating a new animation asset (idle / state-triggered /
 
 A.pre 是可选前置；A 或 A.alt 二选一拿到 mp4；阶段 B/C/D 是通用流水线。
 
+## 输出类型决策（先选这个）
+
+| 想做什么 | 走哪份 |
+|---|---|
+| **角色动画**（idle / state-triggered / attribute-driven 等，WebP 帧序列，常用） | [output-types/animation.md](references/output-types/animation.md) |
+| **图标**（UI icon / emote / badge，单图 + 多尺寸 family，可选 ICO/ICNS 打包） | [output-types/icon.md](references/output-types/icon.md) |
+| **静态图片**（portrait / splash / card / cut-in） | [output-types/image.md](references/output-types/image.md) |
+| **mp4 视频**（直接拿 mp4 不抠图，HTML5/Godot VideoStream 类用） | [output-types/video.md](references/output-types/video.md) |
+
+输出类型决定了 post-processing 流程；下面的"流水线索引"是 animation 默认拆解，icon/image/video 走各自精简版本。
+
 ## 流水线索引
 
 按需读取对应 reference，**不要预先全部加载**：
@@ -51,6 +62,7 @@ A.pre 是可选前置；A 或 A.alt 二选一拿到 mp4；阶段 B/C/D 是通用
 | 状态触发动画（enter/loop/exit 配对） | [state-triggered.md](references/state-triggered.md) |
 | **角色设定（写 prompt 前 mandatory 读）** | references/characters/<slug>.md |
 | 常见坑 + 成本速查 | [troubleshooting.md](references/troubleshooting.md) |
+| **全自动模式设计**（默认 interactive；orchestrator 在建） | [orchestrator.md](references/orchestrator.md) |
 
 ## 通用铁律
 
