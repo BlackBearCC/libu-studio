@@ -26,7 +26,6 @@ The script is destructive: it drops and recreates all tables.
 import argparse
 import datetime as dt
 import json
-import os
 import sqlite3
 import sys
 from pathlib import Path

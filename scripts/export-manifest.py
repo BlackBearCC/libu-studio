@@ -11,7 +11,6 @@ import sqlite3
 import sys
 from pathlib import Path
 
-
 # Canonical key order for top-level + each animation entry, matching how the
 # manifest.json is hand-written today. Keys not in the order list are appended
 # at the end (rare).

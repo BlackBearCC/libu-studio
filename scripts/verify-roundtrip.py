@@ -7,7 +7,7 @@ from pathlib import Path
 
 def diff(a, b, path=""):
     """Yield (path, kind, a_val, b_val) for every mismatch."""
-    if type(a) != type(b):
+    if type(a) is not type(b):
         yield (path or "/", "TYPE", a, b)
         return
     if isinstance(a, dict):
@@ -24,11 +24,10 @@ def diff(a, b, path=""):
         if len(a) != len(b):
             yield (path or "/", "LEN", len(a), len(b))
             return
-        for i, (x, y) in enumerate(zip(a, b)):
+        for i, (x, y) in enumerate(zip(a, b, strict=True)):
             yield from diff(x, y, f"{path}[{i}]")
-    else:
-        if a != b:
-            yield (path or "/", "VAL", a, b)
+    elif a != b:
+        yield (path or "/", "VAL", a, b)
 
 
 def main():

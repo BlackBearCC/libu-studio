@@ -1,7 +1,6 @@
 """Schema sanity tests: tables exist, foreign keys behave, basic insertion works."""
 from __future__ import annotations
 
-
 EXPECTED_TABLES = {
     "characters",
     "anim_tasks",
