@@ -23,6 +23,12 @@
 | LibTV 会员促销 modal 挡住生成器面板 | 平台 banner 弹窗 | JS 移除 `div[class*=mantine-Modal-overlay]:has(text=五一/LibTV/会员2.0)`，或点 X 关掉 |
 | 历史条目的"再次生成"按钮触发重复扣费 | 不是继承配置的快捷方式，是直接重复提交 | 不要点历史条目的"再次生成"；用 `browser_navigate` 重载页面或手动重配 |
 | curl 下载 liblib mp4 返回 403 Tengine | images-wm.liblib.cloud 防盗链 | `curl -sSL -H "Referer: https://www.liblib.art/" ...` 带 Referer |
+| 等生成超时 / 抓到几个月前的 mp4 | history 是 oldest-at-top，`querySelectorAll('video')` 顺序也不可靠 | 用 baseline-diff（跑前 snapshot mp4 URL set，跑完取新增），见 [path-a-alt 第 8 步](path-a-alt-text-to-video.md) |
+| `isInProgress` 永远 true，生成早完了还在等 | `[class*="loading"]` 选到了 captcha / 平台菜单的 loading 而非生成进度条 | 别只看 loading class，叠加 `textContent.includes("生成中")` 或 `/0\/1/` 文字判定；或干脆只信 baseline-diff，不查 in-progress |
+| `尾帧` 按钮 click 命中错误目标 | `textContent.includes('帧')` 太宽，会撞到"首帧"/"上传尾帧参考"等 | 首帧用 `includes('首帧')` 没问题；**尾帧必须 `textContent.trim()==='尾帧'` 精确匹配** |
+| 弹窗里点参考图 img 没反应 | click 落在 `<img>` 上不触发选中，真目标是外层卡片 | 从 `img.editor-upload_customImage__kXa_6` 向上爬 ≤4 层到 `[class*="imgWrap"]` 那张卡片再 `.click()` |
+| 生成按钮文字一直变（限免/创作/生成/点数都见过） | 余额/活动/限免次数会换底栏文字 | 坐标 + regex 多源 fallback：`y∈[920,960] && x>1000 && /限免\|创作\|生成\|点数/.test(text)` |
+| 自动填 prompt 后点生成提交了空字符串 | `textarea.value = prompt` 绕过 React 受控 input 的 setState | 用 native setter：`Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(tgt, prompt)` 然后 dispatch `input` + `change` 事件 |
 
 ## 成本 & 时间
 

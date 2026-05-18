@@ -16,11 +16,28 @@
    - `五官发型一致`
 6. **把模型 + prompt + 比例 + 时长 + 积分一起贴给用户确认**，等"go/开始"才点生成
 7. 监控 "0/1 生成中..." → "1/1 生成完成"（通常 1-3 分钟）
-8. 取视频 URL：
+8. 取视频 URL —— **用 baseline-diff，不要信"列表末尾"**：
+
+   liblib 历史栏视觉顺序是 **oldest-at-top / newest-at-bottom**，且 `querySelectorAll('video')` 返回顺序受 DOM 重排 / lazy-load 影响。"取末尾"或 `sorted(urls)[0]` 都会抓到几个月前的老视频（实测：runner 跑 600s timeout 抓到的是一年前的 mp4）。
+
    ```js
-   Array.from(document.querySelectorAll('video')).map(v => v.src || v.querySelector('source')?.src).filter(Boolean)
+   // 点生成之前：
+   const baseline = new Set(
+     [...document.querySelectorAll('video')]
+       .map(v => v.src || v.currentSrc)
+       .filter(s => s?.startsWith('http') && s.endsWith('.mp4')));
+   // 生成完成后：
+   const current = new Set(/* 同上 */);
+   const newMp4 = [...current].find(u => !baseline.has(u));   // 这才是这次生成的
    ```
-   新增的是列表末尾那条（对比历史，或比较两次 snapshot 的差异）
+
+   Fallback —— 按 prompt 唯一子串在 history card 里反查 video.src：
+   ```js
+   [...document.querySelectorAll('[class*="historyList_videoImgRow"]')]
+     .filter(r => { let p=r; for (let i=0;i<4;i++){ p=p.parentElement; if (p?.querySelector('[class*="prompt"]')) break; }
+                    return p.querySelector('[class*="prompt"]')?.textContent.includes('<prompt 唯一片段>'); })
+     .map(r => r.querySelector('video')?.src)[0];
+   ```
 9. 下载 mp4（必带 Referer 防盗链）：
    ```bash
    curl -sSL -H "Referer: https://www.liblib.art/" -o ~/Downloads/<slug>-<name>.mp4 "<url>"
