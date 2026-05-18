@@ -1,0 +1,33 @@
+# Run with: pre-commit install (once) → hooks fire on every git commit.
+# See: https://pre-commit.com
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=512']
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  - repo: local
+    hooks:
+      - id: no-runtime-data
+        name: Block accidental commit of lab.db / lab.dump.sql / media files
+        entry: bash -c 'for f in "$@"; do case "$f" in lab.db|lab.dump.sql|*.mp4|*.mov|*.webm|*.webp|*.png|*.jpg|*.jpeg|*.gif|*.mp3) echo "Refusing to commit $f (data file — see .gitignore)"; exit 1 ;; esac; done' --
+        language: system
+        types: [file]
+
+      - id: no-hardcoded-home
+        name: Block hard-coded /Users or ~/Documents/<vendor> paths in scripts
+        entry: bash -c 'if git diff --cached --name-only -- "scripts/*.py" | xargs -I{} grep -Hn -E "/Users/|~/Documents/(PetClaw|ClawContent|petclaw-lab)" {} 2>/dev/null; then echo "Hard-coded user paths in scripts/ — please use a CLI arg or env var"; exit 1; fi'
+        language: system
+        pass_filenames: false

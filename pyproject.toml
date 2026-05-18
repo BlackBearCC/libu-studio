@@ -1,0 +1,19 @@
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = ["build", "dist", ".venv", ".git", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = [
+    "E501",   # let formatter handle line length; SKILL.md examples are intentionally long
+    "B008",   # we don't use FastAPI-style defaults
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["lab", "export_manifest", "migrate_from_existing", "verify_roundtrip"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra --strict-markers"

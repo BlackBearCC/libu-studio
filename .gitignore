@@ -64,3 +64,7 @@ node_modules/
 /tmp/
 scratch/
 *.log
+
+# test/lint caches
+.pytest_cache/
+.ruff_cache/
