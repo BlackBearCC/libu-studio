@@ -57,7 +57,7 @@ A.pre 是可选前置；A 或 A.alt 二选一拿到 mp4；阶段 B/C/D 是通用
 1. **用户主导模型选择，skill 不锁定默认**。生成前必须把 **模型 + 分辨率 + 时长（如适用）+ 积分** 四项一起贴给用户确认才点生成。
 2. **角色身份完全靠首尾帧参考图锚定**，prompt 里**禁止描述任何外观/五官/服装**。详见 path-a-alt-text-to-video.md 的"prompt 三铁律"。
 3. **写 prompt 前必读 `references/characters/<slug>.md`**，对齐角色气质和硬约束词。
-4. **每个 anim 跑完必须入 lab.db**：流程结束时通过脚本（见 archive-compress.md）登记 `generations` / `candidates` / `target_inject`。target 项目的 manifest.json 由 `<lab-root>/scripts/export-manifest.py` 自动重生成，**不要手动编辑 target 项目的 manifest.json**。
+4. **每个 anim 跑完必须用 `lab.py` 入 lab.db**：用 `lab.py new / gen / choose / target / inject` 五步登记 + 落地（详见 [archive-compress.md](references/archive-compress.md) D.3）。**不要手动编辑 target 项目的 manifest.json**——lab.db 是单一真相源，target manifest 由 `lab.py inject` 自动重生成。
 
 ## 相关文件
 

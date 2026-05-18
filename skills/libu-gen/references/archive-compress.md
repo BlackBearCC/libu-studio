@@ -70,52 +70,54 @@ du -sh $OUT  # 验证 ≤ 5MB
 
 ## D.3 落 lab.db（替代手抄 manifest.json）
 
-> 当前未做完 `lab.py` CLI 前，临时用 sqlite3 直接 INSERT；Step 3 完成后切到 `lab.py gen/choose/inject`。
+`<lab-root>/scripts/lab.py` 是单 binary CLI（`lab.py --help` 看子命令）。**每个 anim 走五步**：
 
 ```bash
-DB=<lab-root>/lab.db
+LAB=<lab-root>
+TGT=<target-project>
+LAB_PY="$LAB/scripts/lab.py --db $LAB/lab.db"
+
 SLUG=<your-slug>     # e.g. poka-v4
-NAME=<name>
-KIND=idle  # idle / state_triggered / attribute_biased_idle / attribute_transition
+NAME=<anim-name>
 
-# 1. anim_tasks 行
-sqlite3 "$DB" "INSERT INTO anim_tasks
-  (name, character_slug, kind, status, created_at, lab_master_dir, paired_with, trigger_expr, path_summary, notes)
-  VALUES ('$NAME', '$SLUG', '$KIND', 'shipped', date('now'),
-          'work/$SLUG-anim/$NAME/', NULL, NULL, NULL, NULL);"
+# 1. 起 task
+$LAB_PY new $SLUG $NAME \
+  --kind idle \                          # idle / state_triggered / attribute_biased_idle / attribute_transition
+  --status shipped \
+  --lab-master-dir work/$SLUG-anim/$NAME/
 
-# 2. attribute_meta 行（仅 attribute_biased_idle / attribute_transition）
-# sqlite3 "$DB" "INSERT INTO attribute_meta (task_id, attribute, level, ...) VALUES (...);"
+# 2. (optional) attribute_meta — 仅 attribute_biased_idle / attribute_transition
+# $LAB_PY attribute $SLUG $NAME \
+#   --attribute hunger --level starving --bias-weight 0.7 --loops
 
-# 3. main generation 行（chosen=1）
-sqlite3 "$DB" "INSERT INTO generations
-  (task_id, stage, model, prompt, ref_first, ref_last,
-   source_url, resolution, aspect, duration_s, fps, frame_count, audio,
-   credits_spent, credits_note, status, chosen, ran_at)
-  VALUES ((SELECT id FROM anim_tasks WHERE name='$NAME' AND character_slug='$SLUG'),
-          'a-alt', '<model>', '<prompt>', '<ref_first>', '<ref_last>',
-          '<source_url>', '414x554', '3:4', 5, 24, 121, 0,
-          <credits>, '<credits_note>', 'success', 1, date('now'));"
+# 3. (A.pre 走过) 先记 a-pre image-refine generation + 4 候选
+# $LAB_PY gen $SLUG $NAME --stage a-pre --model "Seedream 5.0 Lite" --path image-refine \
+#   --prompt-file /tmp/refine-prompt.txt --credits 16
+# # 然后用上一句返回的 gen id：
+# $LAB_PY cand $SLUG $NAME --gen <ID> --slot 1 --filename "<sha>.png" --chosen
+# $LAB_PY cand $SLUG $NAME --gen <ID> --slot 2 --filename "<sha>.png"
+# ...
 
-# 4. target_inject
-sqlite3 "$DB" "INSERT INTO target_inject (task_id, anim_name, webp_subdir)
-  VALUES ((SELECT id FROM anim_tasks WHERE name='$NAME' AND character_slug='$SLUG'),
-          '$NAME', '$NAME');"
+# 4. 主 generation（视频/动作模仿），chosen=1
+$LAB_PY gen $SLUG $NAME \
+  --stage a-alt \
+  --model "Seedance 1.5 Pro" \
+  --prompt-file /tmp/prompt.txt \
+  --source-url "https://images-wm.liblib.cloud/.../<sha>.mp4" \
+  --resolution "720p (834x1112)" --aspect "3:4" \
+  --duration-s 5 --fps 24 --frame-count 121 --no-audio \
+  --credits 20 --credits-note "限免 4 次中第 1 次" \
+  --chosen
 
-# 5. (A.pre 走过的话) 加 a-pre generation + candidates 表
-# 详见 character 的 idle_starving 历史记录 SELECT * FROM generations WHERE stage='a-pre';
+# 5. target_inject + 一键 inject（重生 manifest.json + 拷 webp）
+$LAB_PY target $SLUG $NAME
+$LAB_PY inject $SLUG $NAME --target-project $TGT
 
-# 6. 重新生成主仓 manifest.json
-TGT_REL=$(sqlite3 "$DB" "SELECT inject_target_dir FROM characters WHERE slug='$SLUG';")
-python3 <lab-root>/scripts/export-manifest.py \
-  "$DB" $SLUG --out <target-project>/${TGT_REL}manifest.json
-
-# 7. 校验 round-trip 零差异（可选）
-python3 <lab-root>/scripts/verify-roundtrip.py \
-  <target-project>/${TGT_REL}manifest.json /tmp/check.json  # 视情况
+# 6. dump 文本镜像供 git diff
+$LAB_PY dump          # writes <lab-root>/lab.dump.sql
 ```
 
-**必填字段（不允许缩写或省略）**：`prompt` / `source_url` / `ref_first`（或 `ref_single`）/ `credits_spent` —— manifest 是这条动画唯一的"完整 reproducible 档案"。
+**必填字段（不允许省略）**：`--prompt` / `--source-url` / `--ref-*` / `--credits` —— manifest 是这条动画唯一的"完整 reproducible 档案"。0 积分也写 `--credits 0` 并在 `--credits-note` 说明（限免/限时 4 折等）。
 
 **关键参考图**（A.pre 洗出来的、用户从 4 张候选挑定的那张）必须留两份：
 - `~/Downloads/<slug>-<anim>-ref.png` — 工作副本，方便后续重传到 liblib 图库
