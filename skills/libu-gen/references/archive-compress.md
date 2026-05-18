@@ -2,7 +2,7 @@
 
 ## D.1 双轨存放：lab 留原片 / 项目用压缩版
 
-`<lab-root>` 指本地 clone 的 ClawContent-Lab 根，`<target-project>` 指 character 消费方仓库根。
+`<lab-root>` 指本地 clone 的 libu-studio 根，`<target-project>` 指 character 消费方仓库根。
 
 - **`<lab-root>/work/<slug>-anim/<name>/`**：完整母本档案，不压缩，方便回溯/重生成
   - `<name>.mp4` — liblib 下载的原始 mp4
@@ -26,7 +26,7 @@ Q=90
 
 SLUG=<your-slug>     # e.g. poka-v4
 ANIM=<name>
-LAB_ROOT=<lab-root>          # local clone of ClawContent-Lab
+LAB_ROOT=<lab-root>          # local clone of libu-studio
 TARGET_PROJECT=<target-project>  # local clone of the character's consuming project
 LAB=$LAB_ROOT/work/$SLUG-anim/$ANIM
 TGT_REL=$(sqlite3 $LAB_ROOT/lab.db \
@@ -135,7 +135,7 @@ git add <path-to>/attribute_anim_director.gd      # (新功能时)
 git add <path-to>/main.gd                         # wiring
 ```
 
-**lab 仓侧**（ClawContent-Lab 本地 clone；多数文件被 `.gitignore` 排除，按需 commit 元数据）：
+**lab 仓侧**（libu-studio 本地 clone；多数文件被 `.gitignore` 排除，按需 commit 元数据）：
 ```bash
 cd <lab-root>
 # work/ 默认被 .gitignore 排除（mp4/png/webp/中间帧不入开源仓），如有需要 PR 公开样例可单独豁免

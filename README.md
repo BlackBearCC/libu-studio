@@ -1,4 +1,8 @@
-# ClawContent-Lab
+# libu-studio
+
+> AI agent-driven content pipeline for [liblib.art](https://www.liblib.art/).
+> One source of truth (`lab.db`) for prompts, generation history, candidates,
+> and target-project injection across icon / image / video / animation outputs.
 
 > ⚠️ **Platform: macOS 14+ only.** The foreground-mask backend uses Apple's
 > `VNGenerateForegroundInstanceMaskRequest` via a small Swift CLI; there is
@@ -29,7 +33,7 @@ animation pipelines built on top of [liblib.art](https://www.liblib.art/):
 ## Layout
 
 ```
-ClawContent-Lab/
+libu-studio/
 ├── scripts/
 │   ├── schema.sql                  # SQLite schema for lab.db
 │   ├── migrate-from-existing.py    # one-shot import from a hand-written manifest.json
@@ -58,8 +62,8 @@ ClawContent-Lab/
 ### 1. Clone
 
 ```bash
-git clone https://github.com/BlackBearCC/ClawContent-Lab.git
-cd ClawContent-Lab
+git clone https://github.com/BlackBearCC/libu-studio.git
+cd libu-studio
 ```
 
 ### 2. Create your `lab.db`

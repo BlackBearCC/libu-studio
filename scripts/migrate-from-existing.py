@@ -43,7 +43,7 @@ def b2i(v):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("project_root", help="path to the character's consuming project")
-    ap.add_argument("lab_root", help="path to ClawContent-Lab repo")
+    ap.add_argument("lab_root", help="path to libu-studio repo")
     ap.add_argument("--out", default=None, help="output lab.db path (default <lab>/lab.db)")
     args = ap.parse_args()
 

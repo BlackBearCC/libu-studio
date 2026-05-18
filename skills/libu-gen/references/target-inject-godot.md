@@ -57,7 +57,7 @@ python3 <lab-root>/scripts/export-manifest.py \
   --out <target-project>/<inject_target_dir>/manifest.json
 ```
 
-`<lab-root>` = ClawContent-Lab 仓本地 clone 根目录。
+`<lab-root>` = libu-studio 仓本地 clone 根目录。
 `<target-project>` + `<inject_target_dir>` 拼起来 = 主仓 manifest.json 应在的位置。
 
 详见 [archive-compress.md](archive-compress.md)。
