@@ -1,6 +1,6 @@
 ---
 name: libu-gen
-description: Use when generating a new animation asset (idle / state-triggered / attribute-driven transition) for any registered character via liblib.art or LibTV agent-im OpenAPI — picks one of four production paths (image-refine / text-to-video / action-mimic / libtv-api), runs macOS Vision foreground mask + despill, exports a WebP frame sequence, lands it into the target project's anim manifest, and auto-appends each prompt to the series prompts log.
+description: Use when generating a new animation, icon, image, or video asset for any registered character via liblib.art / LibTV agent-im OpenAPI / MiniMax image-01 direct API — picks one of five production paths (image-refine / text-to-video Playwright / action-mimic / libtv-api / minimax-image01), runs macOS Vision foreground mask + despill, exports a WebP frame sequence or icon family, lands it into the target project, and auto-appends each prompt to the series prompts log.
 ---
 
 # libu-gen
@@ -21,12 +21,13 @@ description: Use when generating a new animation asset (idle / state-triggered /
 
 - 已登录 liblib.art（账号有积分；**积分按所选模型 + 分辨率算，跑前看 UI 底部那个数字为准**）—— Playwright 路径必备
 - `LIBTV_ACCESS_KEY=sk-libtv-xxxxxxxxxxxx` 环境变量 —— LibTV API 路径必备（容器 / headless / 后台调度场景）
+- `MINIMAX_API_KEY=...` 环境变量 —— MiniMax image-01 icon 批量路径必备
 - Playwright MCP 可用（工具前缀 `mcp__plugin_playwright_playwright__*`），**默认 headless 后台运行**（plugin `.mcp.json` 已加 `--headless`）—— Playwright 路径必备
 - macOS 14+（用 `VNGenerateForegroundInstanceMaskRequest`）
 - Python `imageio-ffmpeg` 已装（自带 ffmpeg 二进制）
 - 目标角色已在 `<lab-root>/lab.db` 的 `characters` 表注册；缺则先 INSERT 一行 + 添加 `references/characters/<slug>.md`
 
-## 四条路径决策
+## 五条路径决策
 
 | 想做的事 | 走哪条 | reference |
 |---|---|---|
@@ -34,10 +35,11 @@ description: Use when generating a new animation asset (idle / state-triggered /
 | **自由创作新 idle**（脑子里有想法但没参考视频），人值班看 UI 控参数 | **A.alt — 文生视频（Playwright）** | [path-a-alt-text-to-video.md](references/path-a-alt-text-to-video.md) |
 | **先把绿幕参考图洗一版再用** | **A.pre — 图生图** | [path-a-pre-image-refine.md](references/path-a-pre-image-refine.md) |
 | **后台 / 容器 / headless / 复杂工作流（短剧/MV/分镜）/ 用户要求全后台不抢焦点** | **A.libtv — LibTV OpenAPI** | [path-libtv-api.md](references/path-libtv-api.md) |
+| **批量出 UI icon / inventory item / badge（统一风格成套白底图）** | **A.minimax — MiniMax image-01 直连 API** | [path-minimax-image01.md](references/path-minimax-image01.md) |
 
-A.pre 是可选前置；A / A.alt / A.libtv 三选一拿到 mp4；阶段 B/C/D 是通用流水线。
+A.pre 是可选前置；A / A.alt / A.libtv 三选一拿到 mp4；批量 icon 走 A.minimax；阶段 B/C/D 是通用流水线。
 
-**Playwright vs LibTV API 默认选择**：用户原话"打开 liblib"、"我看下"、"控积分" → Playwright；用户原话"全后台不切窗口"、"容器里跑"、"复刻一段视频" → LibTV API。两边都能出 mp4，下游流水线一模一样。
+**Playwright vs LibTV API 默认选择**：用户原话"打开 liblib"、"我看下"、"控积分" → Playwright；用户原话"全后台不切窗口"、"容器里跑"、"复刻一段视频" → LibTV API。两边都能出 mp4，下游流水线一模一样。**MiniMax image-01 走 A.minimax**：只用于 icon 批量场景（动画 / 视频用不上）。
 
 ## 输出类型决策（先选这个）
 
@@ -61,6 +63,7 @@ A.pre 是可选前置；A / A.alt / A.libtv 三选一拿到 mp4；阶段 B/C/D �
 | 阶段 A — 动作模仿 | [path-a-action-mimic.md](references/path-a-action-mimic.md) |
 | 阶段 A.alt — 文生视频（Playwright，含 prompt 三铁律） | [path-a-alt-text-to-video.md](references/path-a-alt-text-to-video.md) |
 | 阶段 A.libtv — LibTV OpenAPI（agent-im 直连，i2v / 复杂编排） | [path-libtv-api.md](references/path-libtv-api.md) |
+| 阶段 A.minimax — MiniMax image-01 直连 API（icon 批量主力） | [path-minimax-image01.md](references/path-minimax-image01.md) |
 | **每次 gen 完强制追加 prompts log（用户不用提醒）** | [prompts-log.md](references/prompts-log.md) |
 | 阶段 B — Vision 抠图 + despill + WebP | [pipeline-mask-despill-webp.md](references/pipeline-mask-despill-webp.md) |
 | 阶段 C — target 项目（Godot）注入 | [target-inject-godot.md](references/target-inject-godot.md) |

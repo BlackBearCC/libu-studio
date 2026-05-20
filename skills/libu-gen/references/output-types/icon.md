@@ -15,20 +15,22 @@ single image plus a multi-size family, optionally packaged as `.ico` / `.icns`.
 ## Pipeline
 
 ```
-liblib image-refine / text-to-image  →  (optional) Vision mask + despill
-                                      →  PIL resize family  →  ICO / ICNS pack
-                                      →  lab.db  →  target inject
+liblib image-refine OR MiniMax image-01 direct API   →  (optional) Vision mask + despill
+                                                      →  PIL resize family  →  ICO / ICNS pack
+                                                      →  lab.db  →  target inject
 ```
 
 ### Step 1 — generate the source
 
-Use `image-refine` (if you have a reference) or any text-to-image model
-listed in [models.md](../models.md). Aim for **1024×1024 minimum** so
-downscales stay sharp.
+Two routes — pick by use case:
+
+**Route A — liblib via Playwright** (when you want to control model + 积分 in UI). Use `image-refine` (with reference) or any text-to-image model listed in [models.md](../models.md). Aim for **1024×1024 minimum** so downscales stay sharp.
+
+**Route B — MiniMax image-01 direct API** (recommended for **batch icon families** — UI inventory items, achievement badges, status emotes). Skips the Playwright dance, costs ~$0.01 per image, returns a 1024×1024 URL within seconds. See [path-minimax-image01.md](../path-minimax-image01.md) for prompt iron rules (do NOT mention `sticker` / `die-cut` — model paints a white outer ring border) and shell template.
 
 For a transparent icon, generate on a flat green-screen background — the same
 pipeline as animation references. For an opaque flat-color background icon,
-skip the mask stage.
+skip the mask stage. **MiniMax image-01** defaults to flat **pure white background** with no mask needed — perfect for icons that go on a white card / panel; if your target panel is dark, you'll need to mask out the white BG (PIL `getextrema` + threshold, not Vision — Vision is tuned for green).
 
 Register in lab.db as a single-frame generation:
 

@@ -4,6 +4,10 @@
 
 ## 图片模型（图生图洗参考 / 文生立绘）
 
+**两条路：liblib 平台模型（webui / LibTV API）或 MiniMax image-01 直连 API**。批量 icon 走 image-01（快、便宜、白底直出），其余走 liblib。
+
+### liblib 平台
+
 入口：`/ai-tool/image-generator` → 底部 tab 「图片生成」
 
 | 模型 | 描述 | 典型用法 |
@@ -19,6 +23,14 @@
 | 基础算法 F.2 Pro / Flex | 新一代生图与编辑（2K） | 老底备选 |
 
 > **"风格模型" 是能力标签不是模型本身** —— 表示该底模能挂用户训练的 LoRA。能挂 LoRA 的图像底模目前是：基础模型 F.1 / Qwen-Image / Qwen-Edit / 图片编辑模型。要用风格 LoRA 时必须先选其中一个底模，再在面板里加载具体 LoRA。
+
+### 第三方直连 API
+
+| 模型 | 描述 | 典型用法 | reference |
+|---|---|---|---|
+| **MiniMax image-01** | 直连 `api.minimaxi.com/v1/image_generation`，1024×1024 / 1:1 / 几秒出 / ≈ $0.01/张 / 白底 | 批量出 UI icon / inventory item / badge / emote（同风格成套），无人值守 | [path-minimax-image01.md](path-minimax-image01.md) |
+
+**MiniMax image-01 不能挂 LoRA**，prompt 含 `sticker` / `die-cut` 会自动加白外圈贴纸边框（无法清掉），含 `pixel` 会概率出 minecraft 砖块脸。详见路径文档的"prompt 三铁律"。
 
 ## 视频模型（idle 主路径用）
 
