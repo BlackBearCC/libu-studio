@@ -107,6 +107,18 @@ gen gold_ticket "A single golden boarding-pass ticket with a tiny rocket icon on
 - ❌ `A medicine bottle on a wooden shelf` → 出货架 + 砍价签 + 完整商店场景
 - ❌ `8-bit retro RPG potion` → 像素化
 
+## 流水线步骤总览
+
+```
+1. 选 $STYLE 模板 + 写 n 张 prompt 草稿
+2. 用户确认 prompt 列表（批量 cost 透明: n × $0.01）
+3. 串行 gen()，落本地 jpg
+4. （可选）PIL 缩 family / mask 白底 / ICO 打包
+5. ★ append _prompts_log.md ★  ← 强制
+6. （可选）lab.py gen 入 db
+7. 报告用户：本地路径 + 弃用 / 完工清单
+```
+
 ## 后处理
 
 image-01 输出 1024×1024 jpg / 默认白底。
@@ -126,6 +138,34 @@ image-01 输出 1024×1024 jpg / 默认白底。
   注意：物体本身的高光也可能 >240，会被误抠出空洞。要避免就让 prompt 加 "no white highlights on the object body, use cream / off-white where highlights are needed"。
 
 - **要白底直接用**：跳过 mask，直接 PIL `Image.LANCZOS` 缩出 family（同 [icon.md](output-types/icon.md) Step 3 起步）。
+
+## 落地 prompts log（强制，每次必跑）
+
+批量 icon 一跑就是 20-30 张，**结束后必须**一次性 append 进 `~/Documents/ClawContent-Lab/work/<slug>-icons/_prompts_log.md`。批量场景特别容易忽略这一步——20 张 prompt 都是手写微调的，丢了下次同主题从零试错。schema 见 [prompts-log.md](prompts-log.md)。
+
+推荐 batch 跑完用一个 here-doc 一次性 append（不要每张追加一次造成 race / 顺序乱）：
+
+```bash
+cat >> ~/Documents/ClawContent-Lab/work/$SLUG-icons/_prompts_log.md <<'EOF'
+
+## Batch <YYYY-MM-DD>: <主题>，n=20
+
+**通用规格**: MiniMax image-01 / 1024×1024 / 1:1 / 白底 / ≈ $0.01/张
+**$STYLE 模板版本**: v3 (去 sticker + 显式 NOT pixel)
+
+### 完工列表
+- `heart_potion` — A single chubby red heart-shaped potion bottle... | URL `https://.../xxx.jpg` | ✅
+- `gold_ticket` — A single golden boarding-pass... | URL `...` | ✅
+- `nebula_pouch` — ... | URL `...` | ⚠️ 出了草地背景，重跑加 "isolated on pure white"
+...
+
+### 踩坑 / 弃用 prompt
+- v1 `... sticker style ...` → 白 die-cut 外圈，废
+- v1 `... pixel cute cat ...` → minecraft 砖块脸，废
+EOF
+```
+
+**铁律**：不要把每张图的 URL / prompt 只留在 shell history 里就关 terminal。
 
 ## 成本 & 速度
 
