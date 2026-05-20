@@ -27,7 +27,7 @@
 | `isInProgress` 永远 true，生成早完了还在等 | `[class*="loading"]` 选到了 captcha / 平台菜单的 loading 而非生成进度条 | 别只看 loading class，叠加 `textContent.includes("生成中")` 或 `/0\/1/` 文字判定；或干脆只信 baseline-diff，不查 in-progress |
 | `尾帧` 按钮 click 命中错误目标 | `textContent.includes('帧')` 太宽，会撞到"首帧"/"上传尾帧参考"等 | 首帧用 `includes('首帧')` 没问题；**尾帧必须 `textContent.trim()==='尾帧'` 精确匹配** |
 | 弹窗里点参考图 img 没反应 | click 落在 `<img>` 上不触发选中，真目标是外层卡片 | 从 `img.editor-upload_customImage__kXa_6` 向上爬 ≤4 层到 `[class*="imgWrap"]` 那张卡片再 `.click()` |
-| 生成按钮文字一直变（限免/创作/生成/点数都见过） | 余额/活动/限免次数会换底栏文字 | 坐标 + regex 多源 fallback：`y∈[920,960] && x>1000 && /限免\|创作\|生成\|点数/.test(text)` |
+| 生成按钮文字一直变（限免/创作/生成/点数/**光秃秃的积分数字 "55"** 都见过） | 余额/活动/限免次数会换底栏文字甚至只剩纯数字 | **完全不靠文字**，按坐标+宽度过滤：`y∈[920,960] && x>1000 && width>50` —— 底栏唯一这么大的可点按钮就是生成按钮 |
 | 自动填 prompt 后点生成提交了空字符串 | `textarea.value = prompt` 绕过 React 受控 input 的 setState | 用 native setter：`Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(tgt, prompt)` 然后 dispatch `input` + `change` 事件 |
 
 ## 成本 & 时间
