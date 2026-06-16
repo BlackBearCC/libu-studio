@@ -4,7 +4,7 @@
 
 ## 图片模型（图生图洗参考 / 文生立绘）
 
-**两条路：liblib 平台模型（webui / LibTV API）或 MiniMax image-01 直连 API**。批量 icon 走 image-01（快、便宜、白底直出），其余走 liblib。
+**两条路：liblib 平台模型（webui / LibTV CLI）或 MiniMax image-01 直连 API**。批量 icon 走 image-01（快、便宜、白底直出），其余走 liblib。
 
 ### liblib 平台
 

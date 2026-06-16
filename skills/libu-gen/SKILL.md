@@ -1,6 +1,6 @@
 ---
 name: libu-gen
-description: Use when generating a new animation, icon, image, or video asset for any registered character via liblib.art / LibTV agent-im OpenAPI / MiniMax image-01 direct API — picks one of five production paths (image-refine / text-to-video Playwright / action-mimic / libtv-api / minimax-image01), runs macOS Vision foreground mask + despill, exports a WebP frame sequence or icon family, lands it into the target project, and auto-appends each prompt to the series prompts log.
+description: Use when generating a new animation, icon, image, or video asset for any registered character via liblib.art / LibTV CLI (`libtv`) / MiniMax image-01 direct API — picks one of five production paths (image-refine / text-to-video Playwright / action-mimic / libtv-cli / minimax-image01), runs macOS Vision foreground mask + despill, exports a WebP frame sequence or icon family, lands it into the target project, and auto-appends each prompt to the series prompts log.
 ---
 
 # libu-gen
@@ -20,7 +20,7 @@ description: Use when generating a new animation, icon, image, or video asset fo
 ## 必要准备
 
 - 已登录 liblib.art（账号有积分；**积分按所选模型 + 分辨率算，跑前看 UI 底部那个数字为准**）—— Playwright 路径必备
-- `LIBTV_ACCESS_KEY=sk-libtv-xxxxxxxxxxxx` 环境变量 —— LibTV API 路径必备（容器 / headless / 后台调度场景）
+- 已安装并登录官方 `libtv` CLI（`~/.libtv/libtv`，凭据 `~/.libtv/credentials.json`，`libtv login web/phone`）—— LibTV CLI 路径必备（容器 / headless / 后台）。远程机拷 `credentials.json` 即可，旧 `LIBTV_ACCESS_KEY` 已废
 - `MINIMAX_API_KEY=...` 环境变量 —— MiniMax image-01 icon 批量路径必备
 - Playwright MCP 可用（工具前缀 `mcp__plugin_playwright_playwright__*`），**默认 headless 后台运行**（plugin `.mcp.json` 已加 `--headless`）—— Playwright 路径必备
 - macOS 14+（用 `VNGenerateForegroundInstanceMaskRequest`）
@@ -34,12 +34,12 @@ description: Use when generating a new animation, icon, image, or video asset fo
 | **有一段现成动作 demo**（自拍/找的视频/平台预设），想原样复刻 | **A — 动作模仿** | [path-a-action-mimic.md](references/path-a-action-mimic.md) |
 | **自由创作新 idle**（脑子里有想法但没参考视频），人值班看 UI 控参数 | **A.alt — 文生视频（Playwright）** | [path-a-alt-text-to-video.md](references/path-a-alt-text-to-video.md) |
 | **先把绿幕参考图洗一版再用** | **A.pre — 图生图** | [path-a-pre-image-refine.md](references/path-a-pre-image-refine.md) |
-| **后台 / 容器 / headless / 复杂工作流（短剧/MV/分镜）/ 用户要求全后台不抢焦点** | **A.libtv — LibTV OpenAPI** | [path-libtv-api.md](references/path-libtv-api.md) |
+| **后台 / 容器 / headless / 复杂工作流（短剧/MV/分镜）/ 用户要求全后台不抢焦点** | **A.libtv — LibTV CLI** | [path-libtv-api.md](references/path-libtv-api.md) |
 | **批量出 UI icon / inventory item / badge（统一风格成套白底图）** | **A.minimax — MiniMax image-01 直连 API** | [path-minimax-image01.md](references/path-minimax-image01.md) |
 
 A.pre 是可选前置；A / A.alt / A.libtv 三选一拿到 mp4；批量 icon 走 A.minimax；阶段 B/C/D 是通用流水线。
 
-**Playwright vs LibTV API 默认选择**：用户原话"打开 liblib"、"我看下"、"控积分" → Playwright；用户原话"全后台不切窗口"、"容器里跑"、"复刻一段视频" → LibTV API。两边都能出 mp4，下游流水线一模一样。**MiniMax image-01 走 A.minimax**：只用于 icon 批量场景（动画 / 视频用不上）。
+**Playwright vs LibTV CLI 默认选择**：用户原话"打开 liblib"、"我看下"、"控积分" → Playwright；用户原话"全后台不切窗口"、"容器里跑"、"复刻一段视频" → LibTV CLI（`libtv` 命令行）。两边都能出 mp4，下游流水线一模一样。**MiniMax image-01 走 A.minimax**：只用于 icon 批量场景（动画 / 视频用不上）。
 
 ## 输出类型决策（先选这个）
 
@@ -62,7 +62,7 @@ A.pre 是可选前置；A / A.alt / A.libtv 三选一拿到 mp4；批量 icon �
 | 阶段 A.pre — 图生图洗参考 | [path-a-pre-image-refine.md](references/path-a-pre-image-refine.md) |
 | 阶段 A — 动作模仿 | [path-a-action-mimic.md](references/path-a-action-mimic.md) |
 | 阶段 A.alt — 文生视频（Playwright，含 prompt 三铁律） | [path-a-alt-text-to-video.md](references/path-a-alt-text-to-video.md) |
-| 阶段 A.libtv — LibTV OpenAPI（agent-im 直连，i2v / 复杂编排） | [path-libtv-api.md](references/path-libtv-api.md) |
+| 阶段 A.libtv — LibTV CLI（官方 `libtv` 命令行，i2v / 复杂编排） | [path-libtv-api.md](references/path-libtv-api.md) |
 | 阶段 A.minimax — MiniMax image-01 直连 API（icon 批量主力） | [path-minimax-image01.md](references/path-minimax-image01.md) |
 | **每次 gen 完强制追加 prompts log（用户不用提醒）** | [prompts-log.md](references/prompts-log.md) |
 | 阶段 B — Vision 抠图 + despill + WebP | [pipeline-mask-despill-webp.md](references/pipeline-mask-despill-webp.md) |
@@ -79,13 +79,13 @@ A.pre 是可选前置；A / A.alt / A.libtv 三选一拿到 mp4；批量 icon �
 2. **角色身份完全靠首尾帧参考图锚定**，prompt 里**禁止描述任何外观/五官/服装**。详见 path-a-alt-text-to-video.md 的"prompt 三铁律"。
 3. **写 prompt 前必读 `references/characters/<slug>.md`**，对齐角色气质和硬约束词。
 4. **每个 anim 跑完必须用 `lab.py` 入 lab.db**：用 `lab.py new / gen / choose / target / inject` 五步登记 + 落地（详见 [archive-compress.md](references/archive-compress.md) D.3）。**不要手动编辑 target 项目的 manifest.json**——lab.db 是单一真相源，target manifest 由 `lab.py inject` 自动重生成。
-5. **生成前 verify "无配音"模式**（仅 Playwright 路径）。UI 底部规格栏（`<模型名> 无配音|<时长>` 那一行）必须显示「无配音」，否则可能：(a) mp4 带 audio track 干扰后处理（多 4 MB / 静音也得 strip），(b) 翻倍扣分。每段生成前 verify 一次，UI 默认偶发回到「有配音」。LibTV API 路径默认无配音，不用管这条。
+5. **生成前 verify "无配音"模式**（仅 Playwright 路径）。UI 底部规格栏（`<模型名> 无配音|<时长>` 那一行）必须显示「无配音」，否则可能：(a) mp4 带 audio track 干扰后处理（多 4 MB / 静音也得 strip），(b) 翻倍扣分。每段生成前 verify 一次，UI 默认偶发回到「有配音」。LibTV CLI 路径用 `--set enableSound=off` 控制，不用管这条。
 6. **每次 gen 跑完必须 append `_prompts_log.md`**，用户不用提醒。位置 `~/Documents/ClawContent-Lab/work/<series>/_prompts_log.md`，schema 见 [prompts-log.md](references/prompts-log.md)。漏写 = 下次同主题 prompt 工程从零试错。这是流水线的内置最后一步，不是可选项。
 
 ## 相关文件
 
 - `bgrm.swift` / `bgrm` — macOS Vision 前景抠图 CLI（同目录；首次使用 `swiftc -O bgrm.swift -o bgrm` 编译）
-- `scripts/libtv/*.py` — LibTV OpenAPI 客户端（`_common / create_session / query_session / upload_file / download_results / change_project`），纯 Python 标准库
+- LibTV 出片走官方 `libtv` CLI（`~/.libtv/libtv`），安装 / 登录 / i2v 命令见 [path-libtv-api.md](references/path-libtv-api.md)。旧的 `scripts/libtv/*.py` OpenAPI 客户端已随 LibTV 官方下线删除
 - `<lab-root>/lab.db` — 元数据真相源
 - `<lab-root>/scripts/export-manifest.py` — db → target manifest.json
 - `~/Documents/ClawContent-Lab/work/<series>/_prompts_log.md` — 每次 gen 追加的 prompt 笔记本

@@ -1,6 +1,6 @@
 # Prompts Log — 强制落地约定
 
-每次 generation 跑完（不管走 Playwright path-a / path-a.alt / path-a.pre 还是 libtv API path），**必须**把这次的 prompt + 源 URL + 状态追加到对应 series 的 `_prompts_log.md`。**不要等用户提醒**——用户原话"这样我就不用每次手动提醒你了"，把这件事内化成 skill 默认行为。
+每次 generation 跑完（不管走 Playwright path-a / path-a.alt / path-a.pre 还是 libtv CLI path），**必须**把这次的 prompt + 源 URL + 状态追加到对应 series 的 `_prompts_log.md`。**不要等用户提醒**——用户原话"这样我就不用每次手动提醒你了"，把这件事内化成 skill 默认行为。
 
 ## 文件位置
 
