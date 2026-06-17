@@ -4,7 +4,7 @@
 
 ## 文件位置
 
-按 series 分目录，落在 `~/Documents/ClawContent-Lab/work/<series>/_prompts_log.md`。`<series>` = 角色 slug + 用途，例：
+按 series 分目录，落在 `~/Documents/leo/libu-studio/work/<series>/_prompts_log.md`。`<series>` = 角色 slug + 用途，例：
 
 - `poka-anim` — Poka 桌宠所有动画素材
 - `marvin-anim` — Marvin 桌宠所有动画
@@ -34,7 +34,7 @@
   > <prompt 全文，开头用 > 起 quote block 折行可读>
 - **源 mp4 URL**: `https://libtv-res.liblib.art/.../xxx.mp4`
 - **后处理**: <抽帧 / 抠绿参数 / wall kill 列号 / 输出 webp 张数等关键决策>
-- **lab 母本**: `ClawContent-Lab/work/<series>/<name>/` 或"暂未留 mp4 母本"
+- **lab 母本**: `libu-studio/work/<series>/<name>/` 或"暂未留 mp4 母本"
 - **Godot 注入**: `apps/godot-pet/assets/character-design/<slug>/anim/<name>/` (N 帧)
 - **状态**: ✅ 完工 / ⚠️ 试错弃用 / 🔄 重生中
 ```
@@ -82,11 +82,11 @@
 
 ## 多人协作场景
 
-ClawContent-Lab 不在 git 里（`work/` 是 gitignore），所以这是单机 / 单 contributor 的笔记本。如果你是别的 contributor、想跨机同步，就把 `~/Documents/ClawContent-Lab/work/<series>/_prompts_log.md` 单独同步（rsync / 私有 git repo），不要靠 libu-studio。
+libu-studio 不在 git 里（`work/` 是 gitignore），所以这是单机 / 单 contributor 的笔记本。如果你是别的 contributor、想跨机同步，就把 `~/Documents/leo/libu-studio/work/<series>/_prompts_log.md` 单独同步（rsync / 私有 git repo），不要靠 libu-studio。
 
 ## 相关
 
-- 角色 slug 列表：`sqlite3 ~/Documents/libu-studio/lab.db "SELECT slug FROM characters;"`
+- 角色 slug 列表：`sqlite3 ~/Documents/leo/libu-studio/lab.db "SELECT slug FROM characters;"`
 - 历史成功 prompt 查询（结构化版本，给 SQL 同学）：
   ```sql
   SELECT t.name, g.prompt FROM generations g
@@ -94,4 +94,4 @@ ClawContent-Lab 不在 git 里（`work/` 是 gitignore），所以这是单机 /
   WHERE t.character_slug='<slug>' AND g.chosen=1
   ORDER BY t.id;
   ```
-- 历史 prompts 笔记本（给"翻最近的"看体感的）：`~/Documents/ClawContent-Lab/work/<series>/_prompts_log.md`
+- 历史 prompts 笔记本（给"翻最近的"看体感的）：`~/Documents/leo/libu-studio/work/<series>/_prompts_log.md`

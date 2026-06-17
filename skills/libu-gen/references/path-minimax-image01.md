@@ -141,12 +141,12 @@ image-01 输出 1024×1024 jpg / 默认白底。
 
 ## 落地 prompts log（强制，每次必跑）
 
-批量 icon 一跑就是 20-30 张，**结束后必须**一次性 append 进 `~/Documents/ClawContent-Lab/work/<slug>-icons/_prompts_log.md`。批量场景特别容易忽略这一步——20 张 prompt 都是手写微调的，丢了下次同主题从零试错。schema 见 [prompts-log.md](prompts-log.md)。
+批量 icon 一跑就是 20-30 张，**结束后必须**一次性 append 进 `~/Documents/leo/libu-studio/work/<slug>-icons/_prompts_log.md`。批量场景特别容易忽略这一步——20 张 prompt 都是手写微调的，丢了下次同主题从零试错。schema 见 [prompts-log.md](prompts-log.md)。
 
 推荐 batch 跑完用一个 here-doc 一次性 append（不要每张追加一次造成 race / 顺序乱）：
 
 ```bash
-cat >> ~/Documents/ClawContent-Lab/work/$SLUG-icons/_prompts_log.md <<'EOF'
+cat >> ~/Documents/leo/libu-studio/work/$SLUG-icons/_prompts_log.md <<'EOF'
 
 ## Batch <YYYY-MM-DD>: <主题>，n=20
 
@@ -194,6 +194,6 @@ $LAB_PY gen $SLUG $NAME --stage a-minimax --path text-to-image \
 ## 相关
 
 - 官方文档：https://platform.minimaxi.com/document/image-generation
-- 风模板的演进史（v1 含 sticker 出白圈 → v2 去 sticker → v3 加 NOT pixel）：见 `~/Documents/ClawContent-Lab/work/<slug>-icons/_prompts_log.md`
+- 风模板的演进史（v1 含 sticker 出白圈 → v2 去 sticker → v3 加 NOT pixel）：见 `~/Documents/leo/libu-studio/work/<slug>-icons/_prompts_log.md`
 - 输出类型流程：[icon.md](output-types/icon.md) Step 2 起步（PIL 缩 family）
 - 视频 / 动画 icon 不用本路径，请走 liblib (path-a / path-a.alt) 或 LibTV ([path-libtv-api.md](path-libtv-api.md))
